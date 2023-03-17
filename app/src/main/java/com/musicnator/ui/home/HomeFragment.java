@@ -19,11 +19,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.musicnator.PieceAdapter;
-import com.musicnator.PieceViewModel;
+import com.musicnator.ui.commom.PieceAdapter;
+import com.musicnator.ui.commom.PieceViewModel;
 import com.musicnator.R;
-import com.musicnator.HomeItemTouchCallback;
-import com.musicnator.HomePieceAdapter;
 import com.musicnator.database.Piece;
 
 public class HomeFragment extends Fragment {
@@ -47,7 +45,7 @@ public class HomeFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mRecyclerView = view.findViewById(R.id.recycler_view_order);
 
-        mAdapter = new HomePieceAdapter();
+        mAdapter = new HomePieceAdapter(requireActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new HomeItemTouchCallback(mAdapter, requireActivity()));

@@ -1,16 +1,17 @@
-package com.musicnator;
+package com.musicnator.ui.commom;
 
-import android.annotation.SuppressLint;
-import android.graphics.Paint;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.musicnator.R;
 import com.musicnator.database.PiecePart;
 
 import java.util.ArrayList;
@@ -19,8 +20,10 @@ import java.util.List;
 public abstract class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.PieceViewHolder> {
 
     private final List<PiecePart> mItemList;
+    protected Context mContext;
 
-    public PieceAdapter() {
+    public PieceAdapter(Context context) {
+        this.mContext = context;
         mItemList = new ArrayList<>();
     }
 
@@ -57,10 +60,12 @@ public abstract class PieceAdapter extends RecyclerView.Adapter<PieceAdapter.Pie
 
     public static class PieceViewHolder extends RecyclerView.ViewHolder {
         public TextView mTextView;
+        public ImageView mIcon;
 
         public PieceViewHolder(View itemView) {
             super(itemView);
             mTextView = itemView.findViewById(R.id.list_item_text);
+            mIcon = itemView.findViewById(R.id.list_item_icon);
         }
 
     }

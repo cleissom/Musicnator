@@ -1,15 +1,19 @@
-package com.musicnator;
+package com.musicnator.ui.home;
 
-import android.graphics.Color;
-import android.graphics.Paint;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 
+import com.musicnator.ui.commom.PieceAdapter;
+import com.musicnator.R;
 import com.musicnator.database.PiecePart;
 
 public class HomePieceAdapter extends PieceAdapter {
 
-    public HomePieceAdapter(){}
+    public HomePieceAdapter(Context context){
+        super(context);
+    }
 
     @Override
     public void onBindViewHolder(@NonNull PieceViewHolder holder, int position) {
@@ -18,9 +22,9 @@ public class HomePieceAdapter extends PieceAdapter {
         holder.mTextView.setText(currentItem.getName() + " " + currentItem.getPartNum());
 
         if (currentItem.isPriority()) {
-            holder.mTextView.setTextColor(Color.parseColor("#ffff33"));
+            holder.mTextView.setTextColor(ContextCompat.getColor(mContext, R.color.yellow));
         } else {
-            holder.mTextView.setTextColor(Color.parseColor("#ffffff"));
+            holder.mTextView.setTextColor(ContextCompat.getColor(mContext, R.color.white));
         }
     }
 }

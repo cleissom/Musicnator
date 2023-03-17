@@ -12,7 +12,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.musicnator.databinding.FragmentNotificationsBinding;
 
-public class NotificationsFragment extends Fragment {
+public class LogFragment extends Fragment {
 
     private FragmentNotificationsBinding binding;
 

@@ -12,14 +12,14 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.musicnator.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
+        android:id="@+id/navigation_session"
+        android:name="com.musicnator.ui.session.SessionFragment"
+        android:label="@string/title_session"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.musicnator.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
+        android:id="@+id/navigation_log"
+        android:name="com.musicnator.ui.notifications.LogFragment"
+        android:label="@string/title_log"
         tools:layout="@layout/fragment_notifications" />
 </navigation>

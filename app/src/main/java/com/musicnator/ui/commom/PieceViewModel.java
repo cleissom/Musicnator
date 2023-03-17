@@ -1,4 +1,4 @@
-package com.musicnator;
+package com.musicnator.ui.commom;
 
 import android.app.Application;
 
@@ -14,6 +14,7 @@ import com.musicnator.database.PieceEntity;
 import com.musicnator.database.PiecePart;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -92,8 +93,15 @@ public class PieceViewModel extends AndroidViewModel {
 
     public void setPiecePartCompletedToday(PiecePart piecePart) {
         executorService.execute(() -> pieceDao.insertHistoryEntity(new HistoryEntity(piecePart.getPartId(), DateTimeFormatter.ofPattern("yyyy-MM-dd")
-                .withZone(ZoneOffset.UTC)
+                .withZone(ZoneId.systemDefault())
                 .format(Instant.now()))));
+    }
+
+    public void setPiecePartNotCompletedToday(PiecePart piecePart) {
+        executorService.execute(() -> {
+            long historyId = pieceDao.getTodayHistoryIdByPartId(piecePart.getPartId());
+                pieceDao.deleteHistoryById(historyId);
+        });
     }
 
     public LiveData<List<PiecePart>> getSessionPieceParts() {

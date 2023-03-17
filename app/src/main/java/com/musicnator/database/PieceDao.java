@@ -68,51 +68,45 @@ public interface PieceDao {
 
     /////////////////////////////////////////////////
 
+
     @Transaction
-    @Query("SELECT part_id, piece_id, name, part_num, order_num, is_priority, is_done_today, is_active\n" +
+    @Query("WITH next_order_num AS (\n" +
+            "SELECT order_num\n" +
+            "FROM parts_table\n" +
+            "INNER JOIN pieces_table USING (piece_id)\n" +
+            "LEFT JOIN (\n" +
+            "  SELECT part_id, MAX(date) as date\n" +
+            "  FROM parts_table\n" +
+            "  INNER JOIN pieces_table USING (piece_id)\n" +
+            "  LEFT JOIN history_table USING (part_id)\n" +
+            "  WHERE is_active = 1 AND date < DATE('now','localtime')\n" +
+            "  GROUP BY part_id\n" +
+            "  ) USING (part_id)\n" +
+            "ORDER BY date ASC, order_num ASC LIMIT 1\n" +
+            ")\n" +
+            "\n" +
+            "SELECT part_id, piece_id, name, part_num, order_num, is_priority, is_done_today, is_active\n" +
             "FROM (\n" +
-            "    SELECT *\n" +
-            "    FROM parts_table\n" +
-            "    INNER JOIN pieces_table USING (piece_id)\n" +
-            "    LEFT JOIN history_table USING (part_id)\n" +
-            "    WHERE is_active = 1\n" +
-            "    GROUP BY part_id\n" +
-            ") a \n" +
+            "  SELECT *\n" +
+            "  FROM parts_table\n" +
+            "  INNER JOIN pieces_table USING (piece_id)\n" +
+            "  LEFT JOIN history_table USING (part_id)\n" +
+            "  WHERE is_active = 1\n" +
+            "  GROUP BY part_id\n" +
+            "  ) a\n" +
             "INNER JOIN (\n" +
-            "    SELECT part_id, MAX(date IS date('now')) as is_done_today\n" +
-            "    FROM parts_table\n" +
-            "    INNER JOIN pieces_table USING (piece_id)\n" +
-            "    LEFT JOIN history_table USING (part_id)\n" +
-            "    WHERE is_active = 1\n" +
-            "    GROUP BY part_id\n" +
-            ") b USING (part_id)\n" +
-            "ORDER BY is_priority DESC, \n" +
-            "    CASE \n" +
-            "        WHEN order_num >= (\n" +
-            "            SELECT order_num\n" +
-            "                FROM parts_table\n" +
-            "                INNER JOIN pieces_table USING (piece_id)\n" +
-            "                LEFT JOIN history_table USING (part_id)\n" +
-            "            WHERE is_active = 1 AND ((date IS NOT NULL AND date < date('now'))  OR (date IS NULL))\n" +
-            "            GROUP BY part_id\n" +
-            "            ORDER BY MAX(date) ASC, order_num ASC\n" +
-            "            LIMIT 1\n" +
-            "        ) AND order_num <= (SELECT MAX(order_num) FROM parts_table) \n" +
-            "            THEN order_num \n" +
-            "        WHEN order_num < (\n" +
-            "            SELECT order_num\n" +
-            "            FROM parts_table\n" +
-            "            INNER JOIN pieces_table USING (piece_id)\n" +
-            "            LEFT JOIN history_table USING (part_id)\n" +
-            "            WHERE is_active = 1 AND ((date IS NOT NULL AND date < date('now'))  OR (date IS NULL))\n" +
-            "            GROUP BY part_id\n" +
-            "            ORDER BY MAX(date) ASC, order_num ASC\n" +
-            "            LIMIT 1\n" +
-            "        )\n" +
-            "            THEN order_num + (SELECT MAX(order_num) FROM parts_table) + 1 \n" +
-            "        ELSE \n" +
-            "            order_num - (SELECT MAX(order_num) FROM parts_table) - 1 \n" +
-            "    END")
+            "  SELECT part_id, MAX(date IS DATE('now','localtime')) AS is_done_today\n" +
+            "  FROM parts_table\n" +
+            "  INNER JOIN pieces_table USING (piece_id)\n" +
+            "  LEFT JOIN history_table USING (part_id)\n" +
+            "  WHERE is_active = 1\n" +
+            "  GROUP BY part_id\n" +
+            "  ) b USING (part_id)\n" +
+            "ORDER BY is_priority DESC, CASE \n" +
+            "        WHEN order_num >= (SELECT order_num FROM next_order_num) AND order_num <= (SELECT MAX(order_num) FROM parts_table) THEN order_num \n" +
+            "        WHEN order_num < (SELECT order_num FROM next_order_num) THEN order_num + (SELECT MAX(order_num) FROM parts_table) + 1 \n" +
+            "        ELSE order_num - (SELECT MAX(order_num) FROM parts_table) - 1 \n" +
+            "        END")
     LiveData<List<PiecePart>> getSessionPieceParts();
 
     @Transaction
@@ -126,7 +120,7 @@ public interface PieceDao {
             "    GROUP BY part_id\n" +
             ") a \n" +
             "INNER JOIN (\n" +
-            "    SELECT part_id, MAX(date IS date('now')) as is_done_today\n" +
+            "    SELECT part_id, MAX(date IS date('now','localtime')) as is_done_today\n" +
             "    FROM parts_table\n" +
             "    INNER JOIN pieces_table USING (piece_id)\n" +
             "    LEFT JOIN history_table USING (part_id)\n" +
@@ -147,7 +141,7 @@ public interface PieceDao {
             "    GROUP BY part_id\n" +
             ") a \n" +
             "INNER JOIN (\n" +
-            "    SELECT part_id, MAX(date IS date('now')) as is_done_today\n" +
+            "    SELECT part_id, MAX(date IS date('now','localtime')) as is_done_today\n" +
             "    FROM parts_table\n" +
             "    INNER JOIN pieces_table USING (piece_id)\n" +
             "    LEFT JOIN history_table USING (part_id)\n" +
@@ -172,6 +166,14 @@ public interface PieceDao {
     @Transaction
     @Query("DELETE FROM pieces_table WHERE piece_id = :id")
     void deletePieceById(long id);
+
+    @Transaction
+    @Query("SELECT history_id FROM parts_table LEFT JOIN history_table USING(part_id) WHERE date = date('now', 'localtime') AND part_id = :id")
+    long getTodayHistoryIdByPartId(long id);
+
+    @Transaction
+    @Query("DELETE FROM history_table WHERE history_id = :id")
+    void deleteHistoryById(long id);
 
     @Transaction
     @Query("SELECT order_num FROM parts_table INNER JOIN pieces_table USING (piece_id) WHERE is_active = 1 ORDER BY order_num DESC LIMIT 1")

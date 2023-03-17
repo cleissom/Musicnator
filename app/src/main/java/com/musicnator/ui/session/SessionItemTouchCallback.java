@@ -1,4 +1,4 @@
-package com.musicnator;
+package com.musicnator.ui.session;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.ViewModelProvider;
@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.musicnator.ui.commom.PieceAdapter;
+import com.musicnator.ui.commom.PieceViewModel;
 import com.musicnator.database.PiecePart;
 
 public class SessionItemTouchCallback extends ItemTouchHelper.SimpleCallback {
@@ -16,7 +18,7 @@ public class SessionItemTouchCallback extends ItemTouchHelper.SimpleCallback {
     public SessionItemTouchCallback(PieceAdapter adapter, ViewModelStoreOwner owner) {
         super(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT);
         mAdapter = adapter;
-        mPieceViewModel = new ViewModelProvider(owner).get(PieceViewModel.class);;
+        mPieceViewModel = new ViewModelProvider(owner).get(PieceViewModel.class);
     }
 
 
@@ -32,7 +34,7 @@ public class SessionItemTouchCallback extends ItemTouchHelper.SimpleCallback {
         if (!piecePart.isDoneToday()){
             mPieceViewModel.setPiecePartCompletedToday(piecePart);
         } else {
-            mAdapter.notifyItemChanged(position);
+            mPieceViewModel.setPiecePartNotCompletedToday(piecePart);
         }
 
     }

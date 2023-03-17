@@ -1,10 +1,9 @@
-package com.musicnator.ui.dashboard;
+package com.musicnator.ui.session;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,16 +13,11 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.musicnator.HomeItemTouchCallback;
-import com.musicnator.PieceAdapter;
-import com.musicnator.PieceViewModel;
+import com.musicnator.ui.commom.PieceAdapter;
+import com.musicnator.ui.commom.PieceViewModel;
 import com.musicnator.R;
-import com.musicnator.SessionItemTouchCallback;
-import com.musicnator.SessionPieceAdapter;
-import com.musicnator.databinding.FragmentDashboardBinding;
 
-public class DashboardFragment extends Fragment {
+public class SessionFragment extends Fragment {
 
     private PieceViewModel mPieceViewModel;
     private RecyclerView mRecyclerView;
@@ -39,7 +33,7 @@ public class DashboardFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         mRecyclerView = view.findViewById(R.id.recycler_view_session);
 
-        mAdapter = new SessionPieceAdapter();
+        mAdapter = new SessionPieceAdapter(requireActivity());
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(requireActivity()));
         ItemTouchHelper itemTouchHelper = new ItemTouchHelper(new SessionItemTouchCallback(mAdapter, requireActivity()));
