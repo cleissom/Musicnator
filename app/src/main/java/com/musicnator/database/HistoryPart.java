@@ -2,9 +2,10 @@ package com.musicnator.database;
 
 import androidx.room.ColumnInfo;
 
-import java.util.Objects;
+public class HistoryPart {
+    @ColumnInfo(name = "history_id")
+    private long historyId;
 
-public class PiecePart {
     @ColumnInfo(name = "part_id")
     private long partId;
 
@@ -17,23 +18,21 @@ public class PiecePart {
     @ColumnInfo(name = "part_num")
     private int partNum;
 
-    @ColumnInfo(name = "order_num")
-    private int orderNum;
-
     @ColumnInfo(name = "is_priority")
     private boolean isPriority;
 
     @ColumnInfo(name = "is_active")
     private boolean isActive;
 
-    @ColumnInfo(name = "is_done_today")
-    private boolean isDoneToday;
+    @ColumnInfo(name = "date")
+    private String date;
 
-    public boolean equalsWithoutOrderNum(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        PiecePart piecePart = (PiecePart) o;
-        return partId == piecePart.partId && pieceId == piecePart.pieceId && partNum == piecePart.partNum && isPriority == piecePart.isPriority && isActive == piecePart.isActive && isDoneToday == piecePart.isDoneToday && Objects.equals(name, piecePart.name);
+    public long getHistoryId() {
+        return historyId;
+    }
+
+    public void setHistoryId(long historyId) {
+        this.historyId = historyId;
     }
 
     public long getPartId() {
@@ -68,14 +67,6 @@ public class PiecePart {
         this.partNum = partNum;
     }
 
-    public int getOrderNum() {
-        return orderNum;
-    }
-
-    public void setOrderNum(int orderNum) {
-        this.orderNum = orderNum;
-    }
-
     public boolean isPriority() {
         return isPriority;
     }
@@ -92,11 +83,11 @@ public class PiecePart {
         isActive = active;
     }
 
-    public boolean isDoneToday() {
-        return isDoneToday;
+    public String getDate() {
+        return date;
     }
 
-    public void setDoneToday(boolean doneToday) {
-        isDoneToday = doneToday;
+    public void setDate(String date) {
+        this.date = date;
     }
 }

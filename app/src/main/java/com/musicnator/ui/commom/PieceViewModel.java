@@ -7,6 +7,7 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
 import com.musicnator.database.HistoryEntity;
+import com.musicnator.database.HistoryPart;
 import com.musicnator.database.Piece;
 import com.musicnator.database.PieceDao;
 import com.musicnator.database.PieceDatabase;
@@ -106,5 +107,9 @@ public class PieceViewModel extends AndroidViewModel {
 
     public LiveData<List<PiecePart>> getSessionPieceParts() {
         return pieceDao.getSessionPieceParts();
+    }
+
+    public LiveData<List<HistoryPart>> getAllHistory(){
+        return pieceDao.getAllHistory();
     }
 }

@@ -151,9 +151,13 @@ public interface PieceDao {
             "ORDER BY order_num ASC")
     List<PiecePart> getActivePiecePartsByOrderOnce();
 
-//    @Transaction
-//    @Query("SELECT * FROM pieces_table INNER JOIN parts_table USING (piece_id) WHERE is_active = 1")
-//    LiveData<List<PiecePart>> getActivePieceParts();
+    @Transaction
+    @Query("SELECT history_id, part_id, piece_id, name, part_num, is_priority, is_active, date \n" +
+            " FROM parts_table\n" +
+            "  INNER JOIN pieces_table USING (piece_id)\n" +
+            "  INNER JOIN history_table USING (part_id)\n")
+    LiveData<List<HistoryPart>> getAllHistory();
+
 
     @Transaction
     @Query("UPDATE parts_table SET is_priority = 0 WHERE is_priority = 1")

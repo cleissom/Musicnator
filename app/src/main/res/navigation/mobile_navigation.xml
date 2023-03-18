@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_log"
-        android:name="com.musicnator.ui.notifications.LogFragment"
+        android:name="com.musicnator.ui.log.LogFragment"
         android:label="@string/title_log"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_log" />
 </navigation>

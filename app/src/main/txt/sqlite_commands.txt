@@ -1,0 +1,47 @@
+ORDER BY 
+CASE 
+    WHEN order_num >= 3 AND order_num <= (SELECT MAX(order_num) FROM parts_table) THEN order_num 
+    WHEN order_num < 3 THEN order_num + (SELECT MAX(order_num) FROM parts_table) + 1 
+    ELSE order_num - (SELECT MAX(order_num) FROM parts_table) - 1 
+END;
+
+
+getSessionPieceParts:
+
+WITH next_order_num AS (
+SELECT order_num
+FROM parts_table
+INNER JOIN pieces_table USING (piece_id)
+LEFT JOIN (
+  SELECT part_id, MAX(date) as date
+  FROM parts_table
+  INNER JOIN pieces_table USING (piece_id)
+  LEFT JOIN history_table USING (part_id)
+  WHERE is_active = 1 AND date < DATE('now','localtime')
+  GROUP BY part_id
+  ) USING (part_id)
+ORDER BY date ASC, order_num ASC LIMIT 1
+)
+
+SELECT part_id, piece_id, name, part_num, order_num, is_priority, is_done_today, is_active
+FROM (
+  SELECT *
+  FROM parts_table
+  INNER JOIN pieces_table USING (piece_id)
+  LEFT JOIN history_table USING (part_id)
+  WHERE is_active = 1
+  GROUP BY part_id
+  ) a
+INNER JOIN (
+  SELECT part_id, MAX(date IS DATE('now','localtime')) AS is_done_today
+  FROM parts_table
+  INNER JOIN pieces_table USING (piece_id)
+  LEFT JOIN history_table USING (part_id)
+  WHERE is_active = 1
+  GROUP BY part_id
+  ) b USING (part_id)
+ORDER BY is_priority DESC, CASE 
+        WHEN order_num >= (SELECT order_num FROM next_order_num) AND order_num <= (SELECT MAX(order_num) FROM parts_table) THEN order_num 
+        WHEN order_num < (SELECT order_num FROM next_order_num) THEN order_num + (SELECT MAX(order_num) FROM parts_table) + 1 
+        ELSE order_num - (SELECT MAX(order_num) FROM parts_table) - 1 
+        END
